@@ -106,7 +106,7 @@ async def call_groq_api_summarize(content: str) -> str:
     Task: Information Extraction for Question Generation
     As a highly skilled AI, your expertise lies in meticulously analyzing text to identify and extract pivotal sentences. Your task involves the following steps:
     1. Read the provided text thoroughly.
-    2. Identify and extract the most crucial sentences. These sentences should encapsulate the core facts, findings, or themes that are fundamental to the text's overall meaning.
+    2. Identify and extract maximum 5 most crucial sentences. These sentences should encapsulate the core facts, findings, or themes that are fundamental to the text's overall meaning.
     3. Focus on clarity and conciseness. The extracted sentences should be self-contained and comprehensive, enabling the straightforward formulation of questions.
     4. Ensure accuracy and relevance. The sentences selected should accurately represent the text's main ideas and be directly related to its central discussion.
     5. Present the extracted sentences in a clear, organized manner, suitable for subsequent question development.
@@ -124,7 +124,7 @@ async def call_groq_api_summarize(content: str) -> str:
             messages=[
                 {"role": "user", "content": summarization_prompt.format(content=content)}
             ],
-            temperature=0.6,
+            temperature=0.2,
             max_completion_tokens=32000,
             top_p=0.95,
             stream=False,
@@ -153,6 +153,22 @@ Format your response as a JSON array of question objects. Each question object s
 - related_sentence: the sentence from the original text that the question is based on
 
 IMPORTANT: Your entire response must be a valid JSON array that can be parsed by json.loads().
+Example:
+{{
+   "questions": [
+       {{
+           "question": "What is being released by the PlayStation parent as part of the celebration?",
+           "options": {{
+               "A": "The Dark Odyssey armour set",
+               "B": "The Dark Odyssey Collection",
+               "C": "God of War Ragnarök",
+               "D": "God of War III Remastered"
+           }},
+           "answer": "B",
+           "related_sentence": "PlayStation parent is releasing the Dark Odyssey Collection for the latest game in the series."
+       }}
+       ]
+}}
 """
     
     try:
@@ -164,9 +180,9 @@ IMPORTANT: Your entire response must be a valid JSON array that can be parsed by
                 {"role": "system", "content": "You are a helpful assistant that creates multiple choice questions in perfect JSON format."},
                 {"role": "user", "content": questions_prompt.format(summary=summary)}
             ],
-            temperature=0.6,
-            max_completion_tokens=32000,
-            top_p=0.95,
+            temperature=1,
+            max_completion_tokens=8000,
+            top_p=1,
             stream=False,
             response_format={"type": "json_object"},
         )
