@@ -1,7 +1,10 @@
 # Changelog
 
-## [0.0.1] - 18/03/2025
+## [0.0.2] - 18/03/2025
+### Changed
+- Project restructuring
 
+## [0.0.1] - 18/03/2025
 ### Added
 - Initial project setup
 - FastAPI backend with MCQ generation capabilities
