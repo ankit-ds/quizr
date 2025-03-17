@@ -5,15 +5,19 @@ from typing import Dict, List, Optional
 import os
 import json
 from dotenv import load_dotenv
-import logging
+from loguru import logger
 import traceback
 from groq import Groq
 from constants import SUMMARIZE_MODEL, MCQ_GENERATING_MODEL
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, 
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+# Configure loguru
+logger.remove()  # Remove default handler
+logger.add(
+    sink=lambda msg: print(msg),
+    format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> - <level>{level: <8}</level> - <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+    colorize=True,
+    level="INFO"
+)
 
 # Load environment variables
 load_dotenv()
@@ -81,7 +85,7 @@ async def generate_mcqs(request: ContentRequest):
         # Step 1: Summarize the content
         logger.info("Calling Groq API for content summarization")
         summary = await call_groq_api_summarize(content)
-        logger.info(f"Received summary from Groq API: {summary[:100]}...")
+        logger.info(f"Received summary from Groq API: {summary}")
         
         # Step 2: Generate MCQs from the summary
         logger.info("Calling Groq API for generating MCQs")
@@ -138,7 +142,7 @@ async def call_groq_api_generate_questions(summary: str) -> List[Question]:
     """Call Groq API to generate MCQs from the summary."""
     
     # First we'll try with a simpler prompt that asks for fewer questions
-    questions_prompt = """Create 2 multiple choice questions based on this text:
+    questions_prompt = """Create multiple choice questions based on this text:
 
 "{summary}"
 
@@ -168,7 +172,7 @@ IMPORTANT: Your entire response must be a valid JSON array that can be parsed by
         )
         
         mcq_json = completion.choices[0].message.content
-        logger.info(f"Successfully received MCQs from Groq API: {mcq_json[:100]}...")
+        logger.info(f"Successfully received MCQs from Groq API: {mcq_json}")
         
         # Parse the JSON response
         try:

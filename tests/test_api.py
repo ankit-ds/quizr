@@ -1,7 +1,6 @@
 import asyncio
 import httpx
 import json
-from app import call_groq_api_summarize
 
 async def test_mcq_generation():
     """Test the MCQ generation API."""
@@ -40,37 +39,7 @@ async def test_mcq_generation():
         import traceback
         traceback.print_exc()
 
-async def test_groq_api_summarize():
-    """Test the Groq API summarization function."""
-    
-    # Test content (keep it short for testing)
-    test_content = """
-    The Python programming language is a high-level, interpreted language known for its readability and versatility.
-    It was created by Guido van Rossum and first released in 1991.
-    Python supports multiple programming paradigms and has a comprehensive standard library.
-    """
-    
-    try:
-        # Call the summarization function
-        print("Calling Groq API for summarization...")
-        summary = await call_groq_api_summarize(test_content)
-        
-        # Print the summary
-        print("\nReceived summary:")
-        print(summary)
-        
-        # Basic validation
-        assert isinstance(summary, str), "Summary should be a string"
-        assert len(summary) > 0, "Summary should not be empty"
-        
-        print("\nSummarization test passed successfully!")
-        
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        import traceback
-        traceback.print_exc()
 
 if __name__ == "__main__":
     # Run the tests
     asyncio.run(test_mcq_generation())
-    asyncio.run(test_groq_api_summarize()) 

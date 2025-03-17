@@ -1,0 +1,3 @@
+"""
+MCQ Generator API package
+"""

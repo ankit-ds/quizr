@@ -111,7 +111,7 @@ function createQuiz() {
     const questionEl = document.createElement('div');
     questionEl.className = 'mb-3';
     questionEl.innerHTML = `
-        <h2 class="h6 font-weight-bold mb-3">${currentQuestionIndex + 1}. ${question.question}</h2>
+        <h2 class="h6 fw-bold mb-3">${currentQuestionIndex + 1}. ${question.question}</h2>
         <div id="options-container" class="mb-2 border-bottom"></div>
         <p id="related-sentence" class="mt-2 d-none"></p>
     `;
@@ -121,7 +121,7 @@ function createQuiz() {
     const optionsContainer = document.getElementById('options-container');
     Object.entries(question.options).forEach(([key, value]) => {
         const optionEl = document.createElement('button');
-        optionEl.className = 'btn btn-light w-100 mb-1 text-left';
+        optionEl.className = 'btn btn-light w-100 mb-1 text-start';
         optionEl.textContent = `${key}: ${value}`;
         optionEl.onclick = () => selectAnswer(optionEl, key, question.answer, question.related_sentence);
         optionsContainer.appendChild(optionEl);
@@ -231,7 +231,7 @@ function displayResults() {
     const quizContainer = document.getElementById('quiz-container');
     quizContainer.innerHTML = `
         <div class="text-center">
-            <h2 class="h4 font-weight-bold mb-3">Quiz Completed!</h2>
+            <h2 class="h4 fw-bold mb-3">Quiz Completed!</h2>
             <p class="lead">Your final score: ${score} / ${quizData.questions.length}</p>
             <button class="btn btn-primary" id="resetButton">Generate New Quiz</button>
         </div>
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const quizContainer = document.getElementById('quiz-container');
     quizContainer.innerHTML = `
         <div class="text-center">
-            <h2 class="h4 font-weight-bold mb-3">MCQ Generator</h2>
+            <h2 class="h4 fw-bold mb-3">MCQ Generator</h2>
             <p class="text-muted mb-3">Click the button below to generate multiple choice questions from the current page.</p>
             <button class="btn btn-primary" id="generateButton">Generate MCQs</button>
         </div>
