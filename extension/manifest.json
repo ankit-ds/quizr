@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "MCQ Generator",
+  "version": "1.0",
+  "description": "Generate multiple choice questions from webpage content",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "js/lib/purify.min.js",
+        "js/lib/Readability.js",
+        "js/content.js"
+      ]
+    }
+  ]
+} 

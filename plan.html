@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrome Extension for MCQ Generation</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; }
+        h3 { color: #7f8c8d; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        ul { margin-left: 20px; }
+        p { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Chrome Extension for MCQ Generation</h1>
+
+    <h2>Overview</h2>
+    <p>This document provides a comprehensive guide to developing a Chrome extension that extracts and cleans the main content from the active webpage and sends it to a backend server for generating multiple-choice questions (MCQs). The extension integrates with a FastAPI backend that leverages the Groq API to process the content and return MCQs in a structured JSON format.</p>
+
+    <h2>Prerequisites</h2>
+    <ul>
+        <li>Basic knowledge of JavaScript, HTML, and CSS.</li>
+        <li>Familiarity with Chrome Extension development.</li>
+        <li>Understanding of REST APIs and backend servers.</li>
+    </ul>
+
+    <h2>Extension Structure</h2>
+    <p>The Chrome extension comprises the following components:</p>
+    <ul>
+        <li><strong>manifest.json</strong>: Configuration file defining permissions, scripts, and extension metadata.</li>
+        <li><strong>content.js</strong>: Script to extract and sanitize webpage content using Readability.js and DOMPurify.</li>
+        <li><strong>background.js</strong>: Script to facilitate communication between the content script and the backend server.</li>
+        <li><strong>popup.html</strong>: User interface for initiating the process and displaying generated MCQs.</li>
+        <li><strong>popup.js</strong>: Script to handle user interactions and display results in the popup.</li>
+    </ul>
+
+    <h2>Step-by-Step Guide</h2>
+    <p>Follow these steps to develop and test the Chrome extension:</p>
+
+    <h3>1. Create manifest.json</h3>
+    <p>The <code>manifest.json</code> file is the backbone of the extension, specifying its configuration.</p>
+    <ul>
+        <li>Include permissions: <code>"activeTab"</code>, <code>"tabs"</code>, <code>"storage"</code> (optional), and the backend URL (e.g., <code>"https://your-backend.com/*"</code>) for cross-origin requests.</li>
+        <li>Define the content script to run on all URLs (<code>"&lt;all_urls&gt;"</code>) and list <code>readability.js</code>, <code>dompurify.js</code>, and <code>content.js</code>.</li>
+        <li>Specify <code>background.js</code> as the background script and <code>popup.html</code> as the popup.</li>
+    </ul>
+
+    <h3>2. Create content.js</h3>
+    <p>This script extracts and cleans webpage content within the webpage’s context.</p>
+    <ul>
+        <li>Use Readability.js to extract the main article content: <code>let article = new Readability(document).parse();</code></li>
+        <li>Sanitize with DOMPurify: <code>let cleanedContent = DOMPurify.sanitize(article.content);</code></li>
+        <li>Listen for messages from the background script and respond with the cleaned content.</li>
+    </ul>
+
+    <h3>3. Create background.js</h3>
+    <p>The background script manages communication and backend requests.</p>
+    <ul>
+        <li>Listen for messages from <code>popup.js</code> to initiate content extraction.</li>
+        <li>Send a message to <code>content.js</code> to extract content and make a POST request to the backend with <code>fetch</code>.</li>
+        <li>Return the MCQs to <code>popup.js</code> asynchronously, handling errors if the backend is unreachable.</li>
+    </ul>
+
+    <h3>4. Create popup.html and popup.js</h3>
+    <p>The popup provides a user interface to trigger the process and display results.</p>
+    <ul>
+        <li>In <code>popup.html</code>, create a button to start MCQ generation and a div for displaying results.</li>
+        <li>In <code>popup.js</code>, send a message to <code>background.js</code> on button click, show a loading indicator, and display MCQs upon response.</li>
+    </ul>
+
+    <h3>5. Implement Content Extraction</h3>
+    <p>Use Readability.js to isolate the primary content, excluding extraneous elements like ads or navigation.</p>
+    <ul>
+        <li>Handle cases where extraction fails (e.g., return an error if <code>article</code> is null).</li>
+    </ul>
+
+    <h3>6. Sanitize Content</h3>
+    <p>Employ DOMPurify to remove potential XSS threats from the extracted content, ensuring security.</p>
+
+    <h3>7. Send Content to the Server</h3>
+    <p>Transmit the sanitized content to the backend securely.</p>
+    <ul>
+        <li>Use <code>fetch</code> in <code>background.js</code> to send a POST request to <code>https://your-backend.com/generate-mcqs</code>.</li>
+        <li>Include the content in the request body as JSON: <code>{"content": cleanedContent}</code>.</li>
+    </ul>
+
+    <h3>8. Communication Flow Between Scripts</h3>
+    <p>The scripts interact as follows:</p>
+    <ol>
+        <li>User clicks the button in the popup.</li>
+        <li><code>popup.js</code> sends a message to <code>background.js</code> with <code>chrome.runtime.sendMessage</code>.</li>
+        <li><code>background.js</code> requests content from <code>content.js</code> using <code>chrome.tabs.sendMessage</code>.</li>
+        <li><code>content.js</code> extracts and sanitizes content, sending it back to <code>background.js</code>.</li>
+        <li><code>background.js</code> sends the content to the backend, receives MCQs, and forwards them to <code>popup.js</code>.</li>
+        <li><code>popup.js</code> displays the MCQs or an error message.</li>
+    </ol>
+
+    <h3>9. Test the Extension</h3>
+    <p>Ensure the extension works across various webpages.</p>
+    <ul>
+        <li>Test with complex pages, empty content, and backend failures.</li>
+        <li>Verify error handling and user feedback in the popup.</li>
+    </ul>
+
+    <h3>10. Deploy the Extension</h3>
+    <p>Package and distribute the extension.</p>
+    <ul>
+        <li>Follow Chrome Web Store guidelines for privacy and security.</li>
+    </ul>
+
+    <h2>Additional Considerations</h2>
+    <ul>
+        <li><strong>Privacy:</strong> Avoid sending sensitive data unless necessary; inform users of data usage.</li>
+        <li><strong>Performance:</strong> Optimize extraction and minimize processing delays.</li>
+        <li><strong>Security:</strong> Use HTTPS for backend communication; configure CORS correctly.</li>
+        <li><strong>User Experience:</strong> Show a loading indicator in the popup during processing.</li>
+    </ul>
+
+    <hr>
+
+    <h2>FastAPI Backend for MCQ Generation</h2>
+
+    <h3>Overview</h3>
+    <p>This section outlines the development of a FastAPI backend that receives webpage content from the Chrome extension, processes it using the Groq API to generate MCQs, and returns them in a specified JSON format.</p>
+
+    <h3>Requirements</h3>
+
+    <h4>Functional Requirements</h4>
+    <ul>
+        <li><strong>Receive Webpage Content:</strong> Provide a POST endpoint (e.g., <code>/generate-mcqs</code>) to accept content in JSON format: <code>{"content": "&lt;text&gt;"}</code>.</li>
+        <li><strong>Generate MCQs:</strong> Use the Groq API with two prompts: one to summarize content into key sentences, another to generate MCQs from those sentences.</li>
+        <li><strong>Return MCQs:</strong> Send MCQs back to the extension in JSON format, adhering to the defined schema.</li>
+    </ul>
+
+    <h4>Technical Requirements</h4>
+    <ul>
+        <li><strong>API Integration:</strong> Authenticate with the Groq API using an API key stored in environment variables.</li>
+        <li><strong>Asynchronous Processing:</strong> Use <code>async def</code> for endpoints to handle API calls efficiently.</li>
+        <li><strong>Security:</strong> Configure CORS to allow requests from <code>chrome-extension://&lt;extension-id&gt;</code>; secure API keys.</li>
+        <li><strong>Validation:</strong> Use Pydantic to validate request and response data.</li>
+    </ul>
+
+    <h3>Implementation Details</h3>
+
+    <h4>Endpoint Example</h4>
+    <pre>
+from fastapi import FastAPI
+from pydantic import BaseModel
+import httpx
+import os
+
+app = FastAPI()
+
+class ContentRequest(BaseModel):
+    content: str
+
+@app.post("/generate-mcqs")
+async def generate_mcqs(request: ContentRequest):
+    content = request.content
+    if not content or len(content) > 10000:  # Example validation
+        return {"error": "Invalid content length"}
+    
+    summary = await call_groq_api_summarize(content)
+    mcqs = await call_groq_api_generate_questions(summary)
+    return {"questions": mcqs}
+    </pre>
+
+    <h4>Error Handling</h4>
+    <p>Handle errors gracefully:</p>
+    <ul>
+        <li>If the Groq API fails, return <code>{"error": "API unavailable"}</code>.</li>
+        <li>Validate content length and type to prevent processing issues.</li>
+    </ul>
+
+    <h3>Prompts for Groq API</h3>
+
+    <h4>Summarization Prompt</h4>
+    <pre>
+Task: Information Extraction for Question Generation
+As a highly skilled AI, your expertise lies in meticulously analyzing text to identify and extract pivotal sentences. Your task involves the following steps:
+1. Read the provided text thoroughly.
+2. Identify and extract the most crucial sentences. These sentences should encapsulate the core facts, findings, or themes that are fundamental to the text's overall meaning.
+3. Focus on clarity and conciseness. The extracted sentences should be self-contained and comprehensive, enabling the straightforward formulation of questions.
+4. Ensure accuracy and relevance. The sentences selected should accurately represent the text's main ideas and be directly related to its central discussion.
+5. Present the extracted sentences in a clear, organized manner, suitable for subsequent question development.
+Your role is crucial in distilling the essence of the text into concise, informative segments that can serve as the basis for meaningful and relevant questions.
+    </pre>
+
+    <h4>Question Generation Prompt</h4>
+    <pre>
+{
+  "task": "Generate Multiple Choice Questions",
+  "description": "Based on the provided information, create up to five multiple-choice questions. Each question should have four options (A, B, C, D), with only one correct answer and reference sentence from where this question is generated.",
+  "requirements": [
+    {
+      "type": "question",
+      "format": "text",
+      "specifications": "The question should be clear and based on the given information."
+    },
+    {
+      "type": "options",
+      "format": "list",
+      "specifications": "Provide four options for each question. Label them as A, B, C, and D."
+    },
+    {
+      "type": "answer",
+      "format": "text",
+      "specifications": "Clearly indicate the correct answer for each question."
+    },
+    {
+      "type": "related_sentence",
+      "format": "text",
+      "specifications": "The sentence from which this question is generated."
+    }
+  ],
+  "output_format": "JSON",
+  "example": {
+    "question": "What is the capital of France?",
+    "options": {
+      "A": "Berlin",
+      "B": "Madrid",
+      "C": "Paris",
+      "D": "Rome"
+    },
+    "answer": "C",
+    "related_sentence": "Paris is the capital of France."
+  }
+}
+    </pre>
+
+    <h3>JSON Schema for MCQs</h3>
+    <pre>
+{
+  "type": "json_object",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "questions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string"
+            },
+            "options": {
+              "type": "object",
+              "properties": {
+                "A": { "type": "string" },
+                "B": { "type": "string" },
+                "C": { "type": "string" },
+                "D": { "type": "string" }
+              },
+              "required": ["A", "B", "C", "D"]
+            },
+            "answer": {
+              "type": "string",
+              "pattern": "^[ABCD]$"
+            },
+            "related_sentence": {
+              "type": "string"
+            }
+          },
+          "required": ["question", "options", "answer", "related_sentence"]
+        }
+      }
+    },
+    "required": ["questions"]
+  }
+}
+    </pre>
+
+</body>
+</html>
