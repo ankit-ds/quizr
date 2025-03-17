@@ -45,13 +45,6 @@ The project consists of two main components:
    pip install -r requirements.txt
    ```
 
-   Key dependencies:
-   - fastapi==0.103.1
-   - uvicorn==0.23.2
-   - httpx==0.25.0
-   - python-dotenv==1.0.0
-   - pydantic==2.3.0
-
 4. Create a `.env` file with your Groq API key:
    ```
    GROQ_API_KEY=your_groq_api_key_here
@@ -61,7 +54,7 @@ The project consists of two main components:
 
 Start the FastAPI server:
 ```
-python app.py
+python src/app.py
 ```
 
 The API will be available at `http://localhost:8000`.
@@ -133,7 +126,3 @@ Run the test script to verify the API functionality:
 ```
 python test_api.py
 ```
-
-## License
-
-[MIT License](LICENSE)
