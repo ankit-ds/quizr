@@ -5,6 +5,42 @@ let scoreDisplay;
 let quizData = null;
 let llmClient = null;
 
+// Save quiz state to Chrome storage
+function saveQuizState() {
+    if (quizData) {
+        chrome.storage.local.set({
+            'mcq_quiz_state': {
+                currentQuestionIndex,
+                score,
+                questionAnswered,
+                quizData
+            }
+        });
+    }
+}
+
+// Load quiz state from Chrome storage
+async function loadQuizState() {
+    return new Promise((resolve) => {
+        chrome.storage.local.get('mcq_quiz_state', (result) => {
+            if (result.mcq_quiz_state) {
+                currentQuestionIndex = result.mcq_quiz_state.currentQuestionIndex;
+                score = result.mcq_quiz_state.score;
+                questionAnswered = result.mcq_quiz_state.questionAnswered;
+                quizData = result.mcq_quiz_state.quizData;
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        });
+    });
+}
+
+// Clear quiz state from storage
+function clearQuizState() {
+    chrome.storage.local.remove('mcq_quiz_state');
+}
+
 // Show loading state with vertical stepper progress indicator
 function showLoading(message = 'Generating MCQs...') {
     // Log the progress
@@ -31,8 +67,8 @@ function showLoading(message = 'Generating MCQs...') {
     const steps = [
         { id: 1, label: 'Initializing', description: 'Setting up the process' },
         { id: 2, label: 'Extracting', description: 'Getting content from page' },
-        { id: 3, label: 'Analyzing', description: 'Processing with GPT-4o mini' },
-        { id: 4, label: 'Creating', description: 'Generating questions with GPT-4o' }
+        { id: 3, label: 'Analyzing', description: 'Processing content' },
+        { id: 4, label: 'Creating', description: 'Generating questions' }
     ];
     
     // Generate the stepper HTML
@@ -258,6 +294,13 @@ async function generateMCQs() {
             throw new Error('No questions could be generated from this content. Please try a different page.');
         }
 
+        // Reset state for new quiz
+        currentQuestionIndex = 0;
+        score = 0;
+        questionAnswered = false;
+        
+        // Save quiz state
+        saveQuizState();
         createQuiz();
 
     } catch (error) {
@@ -354,6 +397,9 @@ function selectAnswer(optionEl, selectedOption, correctAnswer, relatedSentence) 
 
     questionAnswered = true;
     updateScoreDisplay();
+    
+    // Save state after answering
+    saveQuizState();
 }
 
 function addNavigationButtons(quizContainer) {
@@ -369,6 +415,7 @@ function addNavigationButtons(quizContainer) {
             currentQuestionIndex--;
             questionAnswered = false;
             createQuiz();
+            saveQuizState();
         }
     };
 
@@ -383,6 +430,7 @@ function addNavigationButtons(quizContainer) {
             currentQuestionIndex++;
             questionAnswered = false;
             createQuiz();
+            saveQuizState();
         } else {
             displayResults();
         }
@@ -410,6 +458,9 @@ function displayResults() {
         </div>
     `;
     document.getElementById('resetButton').addEventListener('click', resetQuiz);
+    
+    // Clear quiz state when displaying results
+    clearQuizState();
 }
 
 function resetQuiz() {
@@ -417,6 +468,7 @@ function resetQuiz() {
     score = 0;
     questionAnswered = false;
     quizData = null;
+    clearQuizState();
     generateMCQs();
 }
 
@@ -425,17 +477,27 @@ function calculateProgress() {
 }
 
 // Initialize the quiz when the popup opens
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const quizContainer = document.getElementById('quiz-container');
-    quizContainer.innerHTML = `
-        <div class="text-center">
-            <h2 class="h4 fw-bold mb-3">MCQ Generator</h2>
-            <p class="text-muted mb-3">Click the button below to generate multiple choice questions from the current page.</p>
-            <button class="btn btn-primary" id="generateButton">Generate MCQs</button>
-        </div>
-    `;
-    document.getElementById('generateButton').addEventListener('click', generateMCQs);
     
     // Initialize LLM client
     llmClient = new LLMClient();
+    
+    // Try to load saved quiz state
+    const hasState = await loadQuizState();
+    
+    if (hasState && quizData && quizData.questions && quizData.questions.length > 0) {
+        // Resume existing quiz
+        createQuiz();
+    } else {
+        // Show initial screen if no state exists
+        quizContainer.innerHTML = `
+            <div class="text-center">
+                <h2 class="h4 fw-bold mb-3">MCQ Generator</h2>
+                <p class="text-muted mb-3">Click the button below to generate multiple choice questions from the current page.</p>
+                <button class="btn btn-primary" id="generateButton">Generate MCQs</button>
+            </div>
+        `;
+        document.getElementById('generateButton').addEventListener('click', generateMCQs);
+    }
 }); 
