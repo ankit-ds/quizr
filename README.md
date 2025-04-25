@@ -5,7 +5,7 @@ A Chrome extension that generates multiple-choice questions (MCQs) from webpage 
 ## Features
 
 - Extract content from any webpage
-- Generate multiple-choice questions based on the content
+- Generate multiple-choice questions based on the content directly using the OpenAI API
 - Uses GPT-4o mini for content summarization and GPT-4o for question generation
 - Interactive quiz interface with instant feedback
 - Score tracking and progress indicators
@@ -58,6 +58,7 @@ You can get an OpenAI API key from [https://platform.openai.com/api-keys](https:
 - Uses Mozilla's Readability.js for content extraction
 - Leverages OpenAI's GPT-4o models for AI processing
 - Bootstrap 5 for UI components
+- Direct OpenAI API integration (no backend server required)
 
 ## Contributing
 
