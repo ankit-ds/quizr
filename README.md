@@ -1,128 +1,77 @@
-# MCQ Extension
+# MCQ Generator Chrome Extension
 
-A Chrome extension that extracts webpage content and generates multiple-choice questions (MCQs) using a FastAPI backend and the Groq API.
+A Chrome extension that generates multiple-choice questions (MCQs) from webpage content. The extension utilizes OpenAI's GPT-4o API to create contextually relevant questions, helping users test their understanding of the material they're reading.
 
-## Project Structure
+## Features
 
-The project consists of two main components:
+- Extract content from any webpage
+- Generate multiple-choice questions based on the content
+- Uses GPT-4o mini for content summarization and GPT-4o for question generation
+- Interactive quiz interface with instant feedback
+- Score tracking and progress indicators
+- Explanation for each question
+- Configurable OpenAI API settings
 
-1. **Chrome Extension**
-   - Located in the `extension/` directory
-   - Features a popup interface for user interaction
-   - Extracts and cleans webpage content
-   - Sends content to the backend for MCQ generation
-   - Displays generated MCQs to the user
+## How It Works
 
-2. **FastAPI Backend**
-   - Receives webpage content from the extension
-   - Processes content using the Groq API
-   - Returns generated MCQs in JSON format
+1. The extension extracts content from the current webpage using Mozilla's Readability.js
+2. Content is summarized using GPT-4o mini
+3. GPT-4o generates multiple-choice questions based on the summarized content
+4. Questions are presented to the user in an interactive quiz format
 
-## Backend Setup
+## Installation
 
-### Prerequisites
+### From Chrome Web Store (Coming Soon)
 
-- Python 3.8+
-- FastAPI
-- Groq API Key
+1. Visit the Chrome Web Store
+2. Search for "MCQ Generator"
+3. Click "Add to Chrome"
 
-### Installation
+### Manual Installation
 
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd mcqExtension
-   ```
+1. Clone this repository
+2. Open Chrome and navigate to `chrome://extensions/`
+3. Enable "Developer mode" in the top right
+4. Click "Load unpacked" and select the `extension` folder from this repository
 
-2. Create and activate a virtual environment:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+## Setup
 
-3. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+After installing the extension, you'll need to provide your own OpenAI API key:
 
-4. Create a `.env` file with your Groq API key:
-   ```
-   GROQ_API_KEY=your_groq_api_key_here
-   ```
+1. Click the extension icon in your browser toolbar
+2. Click the settings icon (⚙️) in the top right corner
+3. Enter your OpenAI API key and select your preferred model
+4. Click "Save Settings"
 
-### Running the API
+You can get an OpenAI API key from [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
 
-Start the FastAPI server:
-```
-python src/app.py
-```
+## Usage
 
-The API will be available at `http://localhost:8000`.
+1. Navigate to any webpage with content you want to test yourself on
+2. Click the extension icon in your browser toolbar
+3. Click "Generate MCQs"
+4. Answer the questions and see your results!
 
-### API Endpoints
+## Technical Details
 
-- `GET /`: Check if the API is running
-- `POST /generate-mcqs`: Generate MCQs from webpage content
+- Built with vanilla JavaScript
+- Uses Mozilla's Readability.js for content extraction
+- Leverages OpenAI's GPT-4o models for AI processing
+- Bootstrap 5 for UI components
 
-#### Request Format (POST /generate-mcqs)
+## Contributing
 
-```json
-{
-  "content": "The webpage content goes here..."
-}
-```
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-#### Response Format
+## License
 
-```json
-{
-  "questions": [
-    {
-      "question": "What is the capital of France?",
-      "options": {
-        "A": "Berlin",
-        "B": "Madrid",
-        "C": "Paris",
-        "D": "Rome"
-      },
-      "answer": "C",
-      "related_sentence": "Paris is the capital of France."
-    },
-    // More questions...
-  ]
-}
-```
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Chrome Extension Setup
+## Privacy
 
-### Installation
+This extension:
+- Stores your OpenAI API key locally in your browser
+- Sends webpage content to OpenAI's API for processing
+- Does not collect or store any user data
 
-1. Open Chrome and navigate to `chrome://extensions/`
-2. Enable "Developer mode" in the top right
-3. Click "Load unpacked" and select the `extension` directory from this project
-
-### Features
-
-The extension includes:
-- Popup interface for user interaction
-- Content extraction from active webpage
-- MCQ generation and display
-- Responsive design with custom styling
-
-### Directory Structure
-
-```
-extension/
-├── css/         # Styling files
-├── js/          # JavaScript functionality
-├── images/      # Extension icons and assets
-├── popup.html   # Extension popup interface
-└── manifest.json # Extension configuration
-```
-
-### Testing
-
-Run the test script to verify the API functionality:
-```
-python test_api.py
-```
+Your API key and content are transmitted directly from your browser to OpenAI. No data is sent to our servers.

@@ -5,10 +5,11 @@
   "description": "Generate multiple choice questions from webpage content",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "host_permissions": [
-    "http://localhost:8000/*"
+    "<all_urls>"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -30,7 +31,8 @@
         "js/lib/purify.min.js",
         "js/lib/Readability.js",
         "js/content.js"
-      ]
+      ],
+      "run_at": "document_idle"
     }
   ]
 } 

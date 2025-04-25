@@ -37,11 +37,92 @@
         .alert {
             border-radius: 8px;
         }
+        
+        .settings-link {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #6c757d;
+            text-decoration: none;
+        }
+        
+        .settings-link:hover {
+            color: #495057;
+        }
+        
+        /* Vertical stepper styles */
+        .stepper-container {
+            margin: 0 auto;
+            max-width: 90%;
+        }
+        
+        .step {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .step-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .circle {
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Checkmark icon style */
+        .circle i.bi {
+            font-size: 14px;
+        }
+        
+        /* Spinner inside circle style */
+        .circle .spinner-border-sm {
+            width: 16px;
+            height: 16px;
+            border-width: 2px;
+        }
+        
+        .line {
+            position: absolute;
+            top: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px !important;
+            margin-left: 0 !important;
+            transition: background-color 0.3s ease;
+        }
+        
+        .active-line {
+            background: linear-gradient(to bottom, #3d5afe, #9fa8da);
+        }
+        
+        .step-content {
+            padding-top: 5px;
+        }
+        
+        .current-action {
+            animation: pulse 2s infinite;
+            color: #3d5afe !important;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
     </style>
 </head>
 
 <body>
     <div id="quiz-container" class="container p-3 bg-white rounded shadow"></div>
+    <a href="settings.html" class="settings-link" title="Settings">
+        <i class="bi bi-gear-fill"></i>
+    </a>
+    <script src="js/utils.js"></script>
+    <script src="js/llm.js"></script>
     <script src="js/quiz.js"></script>
 </body>
 
