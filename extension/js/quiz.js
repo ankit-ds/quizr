@@ -277,13 +277,13 @@ async function generateMCQs() {
         }
 
         // Step 1: First show message for summarizing content
-        showLoading('Analyzing content with GPT-4o mini...');
+        showLoading('Analyzing key concepts and main points...');
         
         // Get the summary
         const summary = await llmClient.summarizeContent(extractedData.content);
         
         // Step 2: Now show message for generating questions
-        showLoading('Creating multiple choice questions with GPT-4o...');
+        showLoading('Creating multiple choice questions...');
 
         // Generate MCQs using the summary
         const questions = await llmClient.generateQuestions(summary);

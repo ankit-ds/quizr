@@ -39,12 +39,11 @@ class LLMClient {
         });
     }
 
-    // Call the OpenAI API to summarize the content using GPT-4o mini
+    // Call the OpenAI API to summarize the content
     async summarizeContent(content) {
         if (window.MCQUtils) {
-            MCQUtils.debugLog('LLMClient', 'Summarizing content with GPT-4o mini', { 
-                contentLength: content.length,
-                model: this.summarizationModel 
+            MCQUtils.debugLog('LLMClient', 'Summarizing content', { 
+                contentLength: content.length
             });
         }
         
@@ -106,12 +105,11 @@ ${content}`;
         }
     }
 
-    // Call the OpenAI API to generate MCQs using GPT-4o
+    // Call the OpenAI API to generate MCQs
     async generateQuestions(summary) {
         if (window.MCQUtils) {
-            MCQUtils.debugLog('LLMClient', 'Generating questions with GPT-4o', { 
-                summaryLength: summary.length,
-                model: this.questionModel 
+            MCQUtils.debugLog('LLMClient', 'Generating questions', { 
+                summaryLength: summary.length
             });
         }
         
@@ -210,10 +208,10 @@ Example:
     // Generate MCQs from the given content
     async generateMCQs(content) {
         try {
-            // Step 1: Summarize the content using GPT-4o mini
+            // Step 1: Summarize the content
             const summary = await this.summarizeContent(content);
             
-            // Step 2: Generate MCQs from the summary using GPT-4o
+            // Step 2: Generate MCQs from the summary
             const questions = await this.generateQuestions(summary);
             
             return { questions };
