@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const apiKeyInput = document.getElementById('apiKeyInput');
     const toggleApiKeyBtn = document.getElementById('toggleApiKey');
     const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    const deleteApiKeyBtn = document.getElementById('deleteApiKeyBtn');
     
     // Initialize LLM client
     const llmClient = new LLMClient();
@@ -76,6 +77,75 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             saveSettingsBtn.disabled = false;
             saveSettingsBtn.textContent = 'Save Settings';
+        }
+    });
+
+    // Delete API key
+    deleteApiKeyBtn.addEventListener('click', async () => {
+        try {
+            // Check if API key exists in storage first
+            const apiKey = await llmClient.getApiKey();
+            
+            if (!apiKey) {
+                // No API key exists
+                const warningMsg = document.createElement('div');
+                warningMsg.className = 'alert alert-warning mt-3';
+                warningMsg.textContent = 'No API key found to delete.';
+                deleteApiKeyBtn.parentNode.parentNode.appendChild(warningMsg);
+                
+                log('No API key found to delete');
+                
+                // Remove warning message after a delay
+                setTimeout(() => {
+                    warningMsg.remove();
+                }, 3000);
+                
+                return;
+            }
+            
+            // If key exists, ask for confirmation
+            if (confirm('Are you sure you want to delete the saved API key?')) {
+                log('Deleting API key');
+                deleteApiKeyBtn.disabled = true;
+                deleteApiKeyBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...';
+                
+                // Delete API key from storage
+                await new Promise((resolve, reject) => {
+                    chrome.storage.sync.remove('openaiApiKey', () => {
+                        if (chrome.runtime.lastError) {
+                            reject(chrome.runtime.lastError);
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+                
+                // Clear input field
+                apiKeyInput.value = '';
+                
+                // Show success message
+                const successMsg = document.createElement('div');
+                successMsg.className = 'alert alert-success mt-3';
+                successMsg.textContent = 'API key deleted successfully!';
+                deleteApiKeyBtn.parentNode.parentNode.appendChild(successMsg);
+                
+                log('API key deleted successfully');
+                
+                // Reset button state after a short delay
+                setTimeout(() => {
+                    deleteApiKeyBtn.disabled = false;
+                    deleteApiKeyBtn.innerHTML = 'Delete API Key';
+                    // Remove success message
+                    successMsg.remove();
+                }, 3000);
+            }
+        } catch (error) {
+            console.error('Error deleting API key:', error);
+            log('Error deleting API key', error);
+            alert('Error deleting API key: ' + error.message);
+            
+            deleteApiKeyBtn.disabled = false;
+            deleteApiKeyBtn.textContent = 'Delete API Key';
         }
     });
 }); 
