@@ -27,7 +27,6 @@ The MCQ Generator is a Chrome extension that transforms webpage content into int
 - Interactive quiz interface with instant feedback
 - Score tracking and progress indicators
 - Explanation for each question
-- Configurable OpenAI API settings
 
 ## Technical Architecture
 
