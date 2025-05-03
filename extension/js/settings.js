@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleApiKeyBtn = document.getElementById('toggleApiKey');
     const saveSettingsBtn = document.getElementById('saveSettingsBtn');
     const deleteApiKeyBtn = document.getElementById('deleteApiKeyBtn');
+    const returnToMainBtn = document.getElementById('returnToMainBtn');
     
     // Initialize LLM client
     const llmClient = new LLMClient();
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const successMsg = document.createElement('div');
             successMsg.className = 'alert alert-success mt-3';
             successMsg.textContent = 'API key saved successfully! Redirecting...';
-            saveSettingsBtn.parentNode.appendChild(successMsg);
+            saveSettingsBtn.parentNode.parentNode.appendChild(successMsg);
             
             log('API key saved successfully');
             
@@ -147,5 +148,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             deleteApiKeyBtn.disabled = false;
             deleteApiKeyBtn.textContent = 'Delete API Key';
         }
+    });
+
+    // Return to main page
+    returnToMainBtn.addEventListener('click', () => {
+        log('Returning to main page');
+        window.location.href = 'popup.html';
     });
 }); 
