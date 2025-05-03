@@ -33,3 +33,4 @@ extension/dist/
 
 # Local development config
 config.local.js
+.cursorignore

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "MCQ Generator",
+  "name": "Quizr: MCQ Generator",
   "version": "1.0",
   "description": "Generate multiple choice questions from webpage content",
   "permissions": [

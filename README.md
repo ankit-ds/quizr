@@ -1,6 +1,23 @@
-# MCQ Generator Chrome Extension
+# Quizr: MCQ Generator Chrome Extension
 
-A Chrome extension that generates multiple-choice questions (MCQs) from webpage content. The extension utilizes OpenAI's GPT-4o API to create contextually relevant questions, helping users test their understanding of the material they're reading.
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Technical Architecture](#technical-architecture)
+  - [Data Flow](#data-flow)
+  - [Workflow](#workflow)
+  - [Technical Specifications](#technical-specifications)
+  - [Security Considerations](#security-considerations)
+  - [Performance Optimizations](#performance-optimizations)
+- [Installation](#installation)
+  - [Manual Installation](#manual-installation)
+- [Setup](#setup)
+- [Usage](#usage)
+- [Privacy](#privacy)
+
+## Overview
+
+The MCQ Generator is a Chrome extension that transforms webpage content into interactive multiple-choice questions using OpenAI's GPT-4o models. It extracts content from any webpage, summarizes it using AI, and generates contextually relevant questions to help users test their understanding of the material.
 
 ## Features
 
@@ -12,20 +29,90 @@ A Chrome extension that generates multiple-choice questions (MCQs) from webpage 
 - Explanation for each question
 - Configurable OpenAI API settings
 
-## How It Works
+## Technical Architecture
 
-1. The extension extracts content from the current webpage using Mozilla's Readability.js
-2. Content is summarized using GPT-4o mini
-3. GPT-4o generates multiple-choice questions based on the summarized content
-4. Questions are presented to the user in an interactive quiz format
+### Data Flow
+
+1. **Content Extraction**:
+   - Content is extracted from the active webpage using Readability
+   - Text is cleaned and sanitized to remove HTML and excess whitespace
+
+2. **Content Summarization**:
+   - The cleaned content is sent to OpenAI's GPT-4o mini model
+   - The model identifies and extracts the 5 most important sentences
+
+3. **Question Generation**:
+   - The summary is sent to OpenAI's GPT-4o model
+   - A structured prompt requests questions in a specific JSON format
+   - Each question includes: question text, 4 options, correct answer, and source sentence
+
+4. **Quiz Presentation**:
+   - Questions are rendered in an interactive interface
+   - User answers are validated in real-time
+   - Progress is tracked and persisted
+
+### Workflow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Extension
+    participant Content Script
+    participant Readability
+    participant LLM Client
+    participant OpenAI API
+    
+    User->>Extension: Click "Generate MCQs"
+    Extension->>Content Script: Request page content
+    Content Script->>Readability: Extract article content
+    Readability-->>Content Script: Return extracted text
+    Content Script-->>Extension: Return cleaned content
+    
+    Extension->>LLM Client: Request content summarization
+    LLM Client->>OpenAI API: Request using GPT-4o mini
+    OpenAI API-->>LLM Client: Return summarized content
+    LLM Client-->>Extension: Return summary
+    
+    Extension->>LLM Client: Request MCQ generation
+    LLM Client->>OpenAI API: Request using GPT-4o
+    OpenAI API-->>LLM Client: Return MCQs in JSON format
+    LLM Client-->>Extension: Return parsed questions
+    
+    Extension->>Extension: Render quiz interface
+    User->>Extension: Answer questions
+    Extension->>Extension: Provide feedback & track score
+    User->>Extension: Complete quiz
+    Extension->>Extension: Display final results
+```
+
+### Technical Specifications
+
+- **Extension Framework**: Chrome Extension Manifest V3
+- **UI Framework**: Bootstrap 5 for responsive design
+- **AI Models**:
+  - GPT-4o mini for summarization (efficient, cost-effective)
+  - GPT-4o for question generation (high quality, complex reasoning)
+- **Storage**:
+  - chrome.storage.sync for API key (synced across devices)
+  - chrome.storage.local for quiz state (device-specific)
+- **Content Extraction**: Mozilla's Readability.js + DOMPurify
+
+### Security Considerations
+
+- API key is stored locally in Chrome's secure storage
+- No backend server - all API calls go directly from browser to OpenAI
+- Content is processed client-side where possible
+- No tracking or data collection
+
+### Performance Optimizations
+
+- Two-stage AI processing:
+  1. Efficient summarization with smaller model (GPT-4o mini)
+  2. High-quality question generation with more powerful model (GPT-4o)
+- Progressive loading UI with step indicators
+- Persistent quiz state to handle popup closing/reopening
 
 ## Installation
-
-### From Chrome Web Store (Coming Soon)
-
-1. Visit the Chrome Web Store
-2. Search for "MCQ Generator"
-3. Click "Add to Chrome"
 
 ### Manual Installation
 
@@ -51,22 +138,6 @@ You can get an OpenAI API key from [https://platform.openai.com/api-keys](https:
 2. Click the extension icon in your browser toolbar
 3. Click "Generate MCQs"
 4. Answer the questions and see your results!
-
-## Technical Details
-
-- Built with vanilla JavaScript
-- Uses Mozilla's Readability.js for content extraction
-- Leverages OpenAI's GPT-4o models for AI processing
-- Bootstrap 5 for UI components
-- Direct OpenAI API integration (no backend server required)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Privacy
 
